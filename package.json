@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "websocket": "^1.0.34"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.6"
+  }
 }
