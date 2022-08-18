@@ -8,6 +8,6 @@ import WebSocketServer from 'websocket';
 // establish connection with backend
 let url: string;
 let protocol: string;
-let webSocket = new WebSocket(url, protocol);
+//let webSocket = new WebSocket(url, protocol);
 
 // end heartbeat stuff things
