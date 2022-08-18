@@ -7,8 +7,4 @@ let rl = readline.createInterface({
   output: process.stdout
 });
 
-while (true) {
-    rl.prompt();
-    rl.getPrompt('');
-    rl.write();
-}
+rl.question('Input ID:\n', (idNum) => {console.log(idNum)})
