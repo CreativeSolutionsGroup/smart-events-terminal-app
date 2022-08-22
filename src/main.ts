@@ -1,4 +1,5 @@
 import ws from 'ws';
+import * as readline from 'readline';
 
 // Build client node
 let client = new ws('ws://localhost:3001/heartbeat');
@@ -13,3 +14,10 @@ client.on('open', () => {
 client.on('close', () => {
     client.send('Dead');
 });
+
+let rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('Input ID:\n', (idNum) => {console.log(idNum)})
