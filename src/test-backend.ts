@@ -18,9 +18,11 @@ const server = expressWs(app);
 server.app.ws('/heartbeat', (server, req, res) => {
     server.on('message', (message: string) => {
         console.log(message);
-    })
-    console.log('Success x2');
-})
+    });
+    server.on('close', () => {
+        console.log('RPI dead');
+    });
+});
 
 console.log('Listening on port ' + port);
 app.listen(port);
