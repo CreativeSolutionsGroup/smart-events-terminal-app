@@ -8,19 +8,19 @@ import https from 'https';
 import fs from 'fs'; // unused?
 import WebSocketServer from 'websocket'; // unused?
 import express from 'express';
-import expressWs from 'express-ws'; // unused?
-import dotenv from 'dotenv';
+import expressWs from 'express-ws';
 
 // build server
-dotenv.config();
 let app = express();
 const port = process.env.PORT ?? 3001;
-let server = https.createServer(app); 
-expressWs(app, server);
+const server = expressWs(app);
 
-app.use((req, res, next) => {
-    console.log('Success!!');
-    next();
-});
+server.app.ws('/heartbeat', (server, req, res) => {
+    server.on('message', (message: string) => {
+        console.log(message);
+    })
+    console.log('Success x2');
+})
 
-app.listen();
+console.log('Listening on port ' + port);
+app.listen(port);
