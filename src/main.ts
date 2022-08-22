@@ -5,6 +5,7 @@ import https from 'https';
 import fs from 'fs';
 import WebSocketServer from 'websocket';
 import ws from 'ws';
+import { time } from 'console';
 
 // relevant functions
 function connect() {
@@ -19,8 +20,13 @@ let protocol: string;
 // ws test
 let client = new ws('ws://localhost:3001/heartbeat');
 client.on('open', () => {
-    // Causes the server to print "Hello"
-    client.send('hi there');
+    setInterval(() => {
+        client.send('RPI 1: Still breathing. Runtime: ' + Date.now());
+    }, 1000)
+});
+
+client.on('close', () => {
+    client.send('Dead');
 });
 
 
