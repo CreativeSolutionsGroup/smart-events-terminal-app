@@ -3,6 +3,7 @@ import * as readline from 'readline';
 import axios from 'axios';
 import getmac from 'getmac';
 import dotenv from 'dotenv';
+import { Heartbeat } from './models/Heartbeat';
 
 dotenv.config()
 
@@ -18,8 +19,10 @@ let client = new ws('ws://localhost:3001/heartbeat');
 // Define functions for client node
 client.on('open', () => {
     setInterval(() => {
-        client.send('RPI 1: Still breathing. Runtime: ' + Date.now());
-    }, 1000)
+        client.send(JSON.stringify({
+          mac_address: callMac()
+        } as Heartbeat));
+    }, 10000)
 });
 
 client.on('close', () => {
