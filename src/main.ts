@@ -7,11 +7,11 @@ import { Heartbeat } from './models/Heartbeat';
 
 dotenv.config()
 
-const backendURL = process.env.BACKEND_URL
-
 const callMac = () => {
   return getmac()
 }
+
+axios.defaults.baseURL = process.env.BACKEND_URL;
 
 // Build client node
 let client = new ws('ws://localhost:3001/heartbeat');
@@ -36,7 +36,7 @@ let rl = readline.createInterface({
 
 const waitForInput = () => {
   rl.question('Input ID:\n', async (idNum) => {    
-    const result = await axios.post(backendURL! + 'v1/checkin', {
+    const result = await axios.post('/checkin', {
       mac_address: callMac(),
       student_id: idNum,
     });
