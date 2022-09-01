@@ -18,15 +18,19 @@ let client = new ws('ws://localhost:3001/heartbeat');
 
 // Define functions for client node
 client.on('open', () => {
-    setInterval(() => {
-        client.send(JSON.stringify({
-          mac_address: callMac()
-        } as Heartbeat));
-    }, 10000)
+  client.send(JSON.stringify({
+    mac_address: callMac()
+  } as Heartbeat));
+  
+  setInterval(() => {
+    client.send(JSON.stringify({
+      mac_address: callMac()
+    } as Heartbeat));
+  }, 10000)
 });
 
 client.on('close', () => {
-    client.send('Dead');
+  client.send('Dead');
 });
 
 let rl = readline.createInterface({
@@ -35,7 +39,7 @@ let rl = readline.createInterface({
 });
 
 const waitForInput = () => {
-  rl.question('Input ID:\n', async (idNum) => {    
+  rl.question('Input ID:\n', async (idNum) => {
     const result = await axios.post('/checkin', {
       mac_address: callMac(),
       student_id: idNum,
