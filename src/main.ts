@@ -4,6 +4,7 @@ import axios from 'axios';
 import getmac from 'getmac';
 import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
+import { Checkin } from './models/Checkin';
 
 dotenv.config()
 
@@ -39,13 +40,25 @@ let rl = readline.createInterface({
 });
 
 const waitForInput = () => {
-  rl.question('Input ID:\n', async (idNum) => {
-    const result = await axios.post('/checkin', {
-      mac_address: callMac(),
-      student_id: idNum,
-    });
+  rl.question('Input ID:\n', async (idNum) => {    
     waitForInput()
+    sendCheckIn({
+      mac_address: callMac(),
+      student_id: idNum
+    }, 1)
   })
+}
+
+//Sends a checkin until the backend recieves it
+const sendCheckIn = async (checkin: Checkin, backoff: number) => {
+  try {
+    const result = await axios.post('/checkin', checkin);
+  } catch (error) {
+    await new Promise(f => setTimeout(f, backoff * 1000));
+    backoff *= 2
+    if (backoff > 128) { backoff = 128 }
+    sendCheckIn(checkin, backoff)
+  }
 }
 
 waitForInput()
