@@ -8,10 +8,6 @@ import { Checkin } from './models/Checkin';
 
 dotenv.config()
 
-const callMac = () => {
-  return getmac()
-}
-
 axios.defaults.baseURL = process.env.BACKEND_URL;
 
 // Build client node
@@ -20,12 +16,12 @@ let client = new ws('ws://localhost:3001/heartbeat');
 // Define functions for client node
 client.on('open', () => {
   client.send(JSON.stringify({
-    mac_address: callMac()
+    mac_address: getmac()
   } as Heartbeat));
   
   setInterval(() => {
     client.send(JSON.stringify({
-      mac_address: callMac()
+      mac_address: getmac()
     } as Heartbeat));
   }, 10000)
 });
@@ -43,7 +39,7 @@ const waitForInput = () => {
   rl.question('Input ID:\n', async (idNum) => {    
     waitForInput()
     sendCheckIn({
-      mac_address: callMac(),
+      mac_address: getmac(),
       student_id: idNum
     }, 1)
   })
