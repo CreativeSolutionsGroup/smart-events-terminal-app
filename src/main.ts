@@ -8,10 +8,11 @@ import { Checkin } from './models/Checkin';
 
 dotenv.config()
 
-axios.defaults.baseURL = process.env.BACKEND_URL;
+axios.defaults.baseURL = process.env.BACKEND_URL ?? "http://localhost:3001/v1";
+const heartbeat_url =  process.env.HEARTBEAT_URL ?? "ws://localhost:3001";
 
 // Build client node
-let client = new ws('ws://localhost:3001/heartbeat');
+let client = new ws(`${heartbeat_url}/heartbeat`);
 
 // Define functions for client node
 client.on('open', () => {
