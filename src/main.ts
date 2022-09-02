@@ -14,6 +14,11 @@ const heartbeat_url =  process.env.HEARTBEAT_URL ?? "ws://localhost:3001";
 // Build client node
 let client = new ws(`${heartbeat_url}/heartbeat`);
 
+//catch WS errors
+client.on('error', (error) => {
+  console.log('WS error: ', error)
+})
+
 // Define functions for client node
 client.on('open', () => {
   client.send(JSON.stringify({
@@ -28,8 +33,9 @@ client.on('open', () => {
 });
 
 client.on('close', () => {
-  client.send('Dead');
+  console.log("closed");
 });
+
 
 let rl = readline.createInterface({
   input: process.stdin,
