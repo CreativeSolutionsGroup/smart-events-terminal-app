@@ -51,7 +51,6 @@ const sendCheckIn = async (checkin: Checkin, backoff: number) => {
   await axios.post('/checkin', checkin)
   .catch (async function (error) {
     const status = error.toJSON().status
-    console.log(status)
     if (status >= 500 || status === null) {
       await new Promise(f => setTimeout(f, backoff * 1000));
       backoff *= 2
