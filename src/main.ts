@@ -65,14 +65,16 @@ const wait_for_input = () => {
 
 //Sends a checkin until the backend recieves it
 const send_check_in = async (checkin: Checkin, backoff: number) => {
-  try {
-    const result = await axios.post('/checkin', checkin);
-  } catch (error) {
-    await new Promise(f => setTimeout(f, backoff * 1000));
-    backoff *= 2
-    if (backoff > 128) { backoff = 128 }
-    send_check_in(checkin, backoff)
-  }
+  await axios.post('/checkin', checkin)
+  .catch (async (error) => {
+    const status = error.toJSON().status
+    if (status >= 500 || status === null) {
+      await new Promise(f => setTimeout(f, backoff * 1000));
+      backoff *= 2
+      if (backoff > 128) { backoff = 128 }
+      sendCheckIn(checkin, backoff)
+    }
+  });
 }
 
 build_heartbeat(0)
