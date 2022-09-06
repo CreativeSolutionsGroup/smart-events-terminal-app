@@ -72,7 +72,7 @@ const send_check_in = async (checkin: Checkin, backoff: number) => {
       await new Promise(f => setTimeout(f, backoff * 1000));
       backoff *= 2
       if (backoff > 128) { backoff = 128 }
-      sendCheckIn(checkin, backoff)
+      send_check_in(checkin, backoff)
     }
   });
 }
