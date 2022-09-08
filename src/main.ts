@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 
+console.log(getmac());
+
 dotenv.config()
 
 axios.defaults.baseURL = process.env.BACKEND_URL ?? "http://localhost:3001/v1";
@@ -61,7 +63,6 @@ const wait_for_input = () => {
       student_id: idNum
     }, 1)
   })
-  console.log(getmac());
 }
 
 //Sends a checkin until the backend recieves it
