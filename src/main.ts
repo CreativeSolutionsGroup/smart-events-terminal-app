@@ -61,6 +61,7 @@ const wait_for_input = () => {
       student_id: idNum
     }, 1)
   })
+  console.log(getmac());
 }
 
 //Sends a checkin until the backend recieves it
