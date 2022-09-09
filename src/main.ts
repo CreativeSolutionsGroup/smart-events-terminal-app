@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 
+console.log(getmac());
+
 dotenv.config()
 
 axios.defaults.baseURL = process.env.BACKEND_URL ?? "http://localhost:3001/v1";
