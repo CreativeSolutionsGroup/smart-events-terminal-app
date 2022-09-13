@@ -58,10 +58,12 @@ let rl = readline.createInterface({
 const wait_for_input = () => {
   rl.question('Input ID:\n', async (idNum) => {
     wait_for_input()
-    send_check_in({
-      mac_address: getmac(),
-      student_id: idNum
-    }, 1)
+    if (idNum.length === 5) {  
+      send_check_in({
+        mac_address: getmac(),
+        student_id: idNum
+      }, 1)
+    }
   })
 }
 
