@@ -5,6 +5,7 @@ import getmac from 'getmac';
 import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
+import { isNumberObject } from 'util/types';
 
 console.log(getmac());
 
@@ -59,10 +60,20 @@ const wait_for_input = () => {
   rl.question('Input ID:\n', async (idNum) => {
     wait_for_input()
     if (idNum.length === 5) {  
-      send_check_in({
-        mac_address: getmac(),
-        student_id: idNum
-      }, 1)
+      if (!isNaN(Number(idNum))) {
+        send_check_in({
+          mac_address: getmac(),
+          student_id: idNum
+        }, 1)
+      }
+    } else if (idNum.length > 5) {
+      const modId = idNum.slice(-5);     
+      if (!isNaN(Number(modId))) {
+        send_check_in({
+          mac_address: getmac(),
+          student_id: modId
+        }, 1)
+      }
     }
   })
 }
