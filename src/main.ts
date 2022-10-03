@@ -5,13 +5,14 @@ import getmac from 'getmac';
 import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
-import { isNumberObject } from 'util/types';
+import { initialize_database } from './services/orm';
 
 const ID_LENGTH = 5;
 
 console.log(getmac());
 
 dotenv.config();
+initialize_database();
 
 axios.defaults.baseURL = process.env.BACKEND_URL ?? "http://localhost:3001/v1";
 const heartbeat_url = process.env.HEARTBEAT_URL ?? "ws://localhost:3001";
