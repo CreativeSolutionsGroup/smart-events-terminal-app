@@ -13,6 +13,7 @@ export const delete_check_in = (id: string): string => {
 // Inserts a checkin into the cache at the back
 export const insert_check_in = (check_in: Checkin) => {
     // check_in should have a .save() function
+    check_in.save()
 }
 
 /**

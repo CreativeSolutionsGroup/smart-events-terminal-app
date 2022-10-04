@@ -1,10 +1,10 @@
-import { Column, Entity, PrimaryColumn } from "typeorm"
+import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm"
 
 @Entity()
-export class Checkin {
-    @PrimaryColumn()
+export class Checkin extends BaseEntity {
+    @Column()
     mac_address!: string
 
-    @Column()
+    @PrimaryColumn()
     student_id!: string
 }
