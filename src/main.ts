@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 import { initialize_database } from './services/orm';
+import { insert_check_in } from './services/checkin';
 
 const ID_LENGTH = 5;
 
@@ -62,20 +63,18 @@ let rl = readline.createInterface({
 const wait_for_input = () => {
   rl.question('Input ID:\n', async (idNum) => {
     wait_for_input()
+    const check_in = new Checkin();
+    check_in.mac_address = getmac()
     if (idNum.length === ID_LENGTH) {  
       if (!isNaN(Number(idNum))) {
-        send_check_in({
-          mac_address: getmac(),
-          student_id: idNum
-        }, 1)
+        check_in.student_id = idNum
+        insert_check_in(check_in)
       }
     } else if (idNum.length > ID_LENGTH) {
       const modId = idNum.slice(-ID_LENGTH);     
       if (!isNaN(Number(modId))) {
-        send_check_in({
-          mac_address: getmac(),
-          student_id: modId
-        }, 1)
+        check_in.student_id = modId
+        insert_check_in(check_in)
       }
     }
   })
