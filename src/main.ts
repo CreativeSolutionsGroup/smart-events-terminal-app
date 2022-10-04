@@ -5,11 +5,14 @@ import getmac from 'getmac';
 import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
-import { isNumberObject } from 'util/types';
+import { initialize_database } from './services/orm';
+
+const ID_LENGTH = 5;
 
 console.log(getmac());
 
-dotenv.config()
+dotenv.config();
+initialize_database();
 
 axios.defaults.baseURL = process.env.BACKEND_URL ?? "http://localhost:3001/v1";
 const heartbeat_url = process.env.HEARTBEAT_URL ?? "ws://localhost:3001";
@@ -59,15 +62,15 @@ let rl = readline.createInterface({
 const wait_for_input = () => {
   rl.question('Input ID:\n', async (idNum) => {
     wait_for_input()
-    if (idNum.length === 5) {  
+    if (idNum.length === ID_LENGTH) {  
       if (!isNaN(Number(idNum))) {
         send_check_in({
           mac_address: getmac(),
           student_id: idNum
         }, 1)
       }
-    } else if (idNum.length > 5) {
-      const modId = idNum.slice(-5);     
+    } else if (idNum.length > ID_LENGTH) {
+      const modId = idNum.slice(-ID_LENGTH);     
       if (!isNaN(Number(modId))) {
         send_check_in({
           mac_address: getmac(),
