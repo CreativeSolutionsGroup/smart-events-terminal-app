@@ -6,14 +6,13 @@ export const read_all_check_ins = (): Array<Checkin> => {
 }
 
 // Deletes a given checkin with id from the cache.
-export const delete_check_in = (id: string): string => {
-    return "";
+export const delete_check_in = async(id: string) => {
+    await Checkin.delete(id)
 }
 
 // Inserts a checkin into the cache at the back
-export const insert_check_in = (check_in: Checkin) => {
-    // check_in should have a .save() function
-    check_in.save()
+export const insert_check_in = async(check_in: Checkin) => {
+    await check_in.save()
 }
 
 /**
@@ -21,15 +20,12 @@ export const insert_check_in = (check_in: Checkin) => {
  * @param ids an array of prim strings to delete from the database.
  * @returns {Array<string>} an array of all the successful deletes
  */
-export const delete_checkin_list = (ids: Array<string>): Array<string> => {
-    // TODO: the implementation is fine if you just return `ids`.
-    // we can just assume the deletion succeeded.
-    // you should NOT just write a for loop here...
-    return []
+export const delete_checkin_list = async(ids: Array<string>) => {
+    await Checkin.delete(ids)
 }
 
 // deletes the top checkin (pop)
 export const delete_top_checkin = () => {
-
+    
 }
 

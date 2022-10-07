@@ -1,12 +1,12 @@
 import ws from 'ws';
 import * as readline from 'readline';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import getmac from 'getmac';
 import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 import { initialize_database } from './services/orm';
-import { insert_check_in } from './services/checkin';
+import { delete_check_in, delete_top_checkin, insert_check_in } from './services/checkin';
 
 const ID_LENGTH = 5;
 
@@ -80,19 +80,43 @@ const wait_for_input = () => {
   })
 }
 
+const timeout = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+const read_cache = async() => {
+  const cache = await Checkin.find()
+  await Promise.all(cache.map(async (checkin) => {
+    await send_check_in(checkin)
+  }))
+}
+
+const cache_observer = () => {
+  let is_resolved = true
+  setInterval(async()=> {
+    if (is_resolved) {
+      is_resolved = false
+      await read_cache()
+      is_resolved = true
+    }
+  }, (30 * 1000))
+}
+
+
 //Sends a checkin until the backend recieves it
-const send_check_in = async (checkin: Checkin, backoff: number) => {
-  await axios.post('/checkin', checkin)
-  .catch (async (error) => {
+const send_check_in = async (checkin: Checkin) => {
+  try{
+    await axios.post('/checkin', checkin)
+    await delete_check_in(checkin.student_id)
+  }
+  catch (error: any){
     const status = error.toJSON().status
     if (status >= 500 || status === null) {
-      await new Promise(f => setTimeout(f, backoff * 1000));
-      backoff *= 2
-      if (backoff > 128) { backoff = 128 }
-      send_check_in(checkin, backoff)
+      await send_check_in(checkin)
     }
-  });
+  }
 }
 
 build_heartbeat(0)
 wait_for_input()
+cache_observer()
