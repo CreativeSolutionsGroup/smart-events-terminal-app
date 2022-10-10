@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 import { initialize_database } from './services/orm';
-import { delete_check_in, delete_top_checkin, insert_check_in } from './services/checkin';
+import { delete_check_in, insert_check_in } from './services/checkin';
 
 const ID_LENGTH = 5;
 
