@@ -65,13 +65,13 @@ const wait_for_input = () => {
     wait_for_input()
     const check_in = new Checkin();
     check_in.mac_address = getmac()
-    if (idNum.length === ID_LENGTH) {  
+    if (idNum.length === ID_LENGTH) {
       if (!isNaN(Number(idNum))) {
         check_in.student_id = idNum
         insert_check_in(check_in)
       }
     } else if (idNum.length > ID_LENGTH) {
-      const modId = idNum.slice(-ID_LENGTH);     
+      const modId = idNum.slice(-ID_LENGTH);
       if (!isNaN(Number(modId))) {
         check_in.student_id = modId
         insert_check_in(check_in)
@@ -80,11 +80,7 @@ const wait_for_input = () => {
   })
 }
 
-const timeout = (ms: number) => {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-const read_cache = async() => {
+const read_cache = async () => {
   const cache = await Checkin.find()
   await Promise.all(cache.map(async (checkin) => {
     await send_check_in(checkin)
@@ -93,7 +89,7 @@ const read_cache = async() => {
 
 const cache_observer = () => {
   let is_resolved = true
-  setInterval(async()=> {
+  setInterval(async () => {
     if (is_resolved) {
       is_resolved = false
       await read_cache()
@@ -105,14 +101,14 @@ const cache_observer = () => {
 
 //Sends a checkin until the backend recieves it
 const send_check_in = async (checkin: Checkin) => {
-  try{
+  try {
     await axios.post('/checkin', checkin)
     await delete_check_in(checkin.student_id)
   }
-  catch (error: any){
+  catch (error: any) {
     const status = error.toJSON().status
     if (status >= 500 || status === null) {
-      await send_check_in(checkin)
+      console.log(status + " trying to resend next cycle");
     }
   }
 }
