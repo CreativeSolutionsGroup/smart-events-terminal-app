@@ -1,12 +1,12 @@
 import ws from 'ws';
 import * as readline from 'readline';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import getmac from 'getmac';
 import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 import { initialize_database } from './services/orm';
-import { insert_check_in } from './services/checkin';
+import { delete_check_in, insert_check_in } from './services/checkin';
 
 const ID_LENGTH = 5;
 
@@ -65,13 +65,13 @@ const wait_for_input = () => {
     wait_for_input()
     const check_in = new Checkin();
     check_in.mac_address = getmac()
-    if (idNum.length === ID_LENGTH) {  
+    if (idNum.length === ID_LENGTH) {
       if (!isNaN(Number(idNum))) {
         check_in.student_id = idNum
         insert_check_in(check_in)
       }
     } else if (idNum.length > ID_LENGTH) {
-      const modId = idNum.slice(-ID_LENGTH);     
+      const modId = idNum.slice(-ID_LENGTH);
       if (!isNaN(Number(modId))) {
         check_in.student_id = modId
         insert_check_in(check_in)
@@ -80,19 +80,41 @@ const wait_for_input = () => {
   })
 }
 
+const read_cache = async () => {
+  const cache = await Checkin.find()
+  await Promise.all(cache.map(async (checkin) => {
+    await send_check_in(checkin)
+  }))
+}
+
+const cache_observer = () => {
+  let is_resolved = true
+  setInterval(async () => {
+    if (is_resolved) {
+      is_resolved = false
+      await read_cache()
+      is_resolved = true
+    }
+  }, (30 * 1000))
+}
+
+
 //Sends a checkin until the backend recieves it
-const send_check_in = async (checkin: Checkin, backoff: number) => {
-  await axios.post('/checkin', checkin)
-  .catch (async (error) => {
+const send_check_in = async (checkin: Checkin) => {
+  try {
+    await axios.post('/checkin', checkin)
+    await delete_check_in(checkin.student_id)
+  }
+  catch (error: any) {
     const status = error.toJSON().status
     if (status >= 500 || status === null) {
-      await new Promise(f => setTimeout(f, backoff * 1000));
-      backoff *= 2
-      if (backoff > 128) { backoff = 128 }
-      send_check_in(checkin, backoff)
+      console.log(status + " trying to resend next cycle");
+    } else if (status == 409) {
+      await delete_check_in(checkin.student_id)
     }
-  });
+  }
 }
 
 build_heartbeat(0)
 wait_for_input()
+cache_observer()
