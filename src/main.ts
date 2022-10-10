@@ -109,6 +109,8 @@ const send_check_in = async (checkin: Checkin) => {
     const status = error.toJSON().status
     if (status >= 500 || status === null) {
       console.log(status + " trying to resend next cycle");
+    } else if (status == 409) {
+      await delete_check_in(checkin.student_id)
     }
   }
 }
