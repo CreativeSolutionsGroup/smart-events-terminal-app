@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { Heartbeat } from './models/Heartbeat';
 import { Checkin } from './models/Checkin';
 import { initialize_database } from './services/orm';
-import { delete_check_in, insert_check_in } from './services/checkin';
+import { delete_bulk_checkin, insert_check_in, delete_check_in } from './services/checkin';
 
 const ID_LENGTH = 5;
 
@@ -82,9 +82,7 @@ const wait_for_input = () => {
 
 const read_cache = async () => {
   const cache = await Checkin.find()
-  await Promise.all(cache.map(async (checkin) => {
-    await send_check_in(checkin)
-  }))
+  await send_check_in(cache)
 }
 
 const cache_observer = () => {
@@ -100,17 +98,16 @@ const cache_observer = () => {
 
 
 //Sends a checkin until the backend recieves it
-const send_check_in = async (checkin: Checkin) => {
+const send_check_in = async (checkins: Array<Checkin>) => {
   try {
-    await axios.post('/checkin', checkin)
-    await delete_check_in(checkin.student_id)
+    await axios.post('/checkin/bulk', checkins)
+    const ids = checkins.map(checkins => checkins.student_id)
+    await delete_bulk_checkin(ids)
   }
   catch (error: any) {
     const status = error.toJSON().status
     if (status >= 500 || status === null) {
       console.log(status + " trying to resend next cycle");
-    } else if (status == 409) {
-      await delete_check_in(checkin.student_id)
     }
   }
 }
