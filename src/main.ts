@@ -8,9 +8,18 @@ import { Checkin } from './models/Checkin';
 import { initialize_database } from './services/orm';
 import { delete_check_in, insert_check_in } from './services/checkin';
 
+const get_mac = (): string => {
+  try {
+    return getmac()
+  } catch (error) {
+    console.log("Not connected to an interface :(");
+    return "00:00:00:00:00:00"
+  }
+}
+
 const ID_LENGTH = 5;
 
-console.log(getmac());
+console.log(get_mac());
 
 dotenv.config();
 initialize_database();
@@ -36,14 +45,14 @@ const build_heartbeat = async (backoff: number) => {
   // Define functions for client node
   client.on('open', () => {
     client.send(JSON.stringify({
-      mac_address: getmac()
+      mac_address: get_mac()
     } as Heartbeat));
 
     //This function will still activate after the client closes so the Bool checks that the client is open still
     setInterval(() => {
       if (clientOn) {
         client.send(JSON.stringify({
-          mac_address: getmac()
+          mac_address: get_mac()
         } as Heartbeat));
       }
     }, 10000)
@@ -64,7 +73,7 @@ const wait_for_input = () => {
   rl.question('Input ID:\n', async (idNum) => {
     wait_for_input()
     const check_in = new Checkin();
-    check_in.mac_address = getmac()
+    check_in.mac_address = get_mac()
     if (idNum.length === ID_LENGTH) {
       if (!isNaN(Number(idNum))) {
         check_in.student_id = idNum
