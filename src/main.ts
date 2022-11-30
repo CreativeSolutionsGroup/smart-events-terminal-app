@@ -132,7 +132,12 @@ const send_check_in = async (checkin: Checkin) => {
     if (status >= 500 || status === null) {
       console.log(status + " trying to resend next cycle");
     } else if (status == 409) {
-      await delete_check_in(checkin.student_id)
+      try {
+        await delete_check_in(checkin.student_id)
+      } catch (e) {
+        console.error("Failed to delete checkin. Got the following error:")
+        console.error(e)
+      }
     }
   }
 }
